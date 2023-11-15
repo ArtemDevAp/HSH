@@ -1,0 +1,39 @@
+
+# Generated files
+/build
+bin/
+gen/
+out/
+
+# Gradle file
+.gradle
+
+# Local cinfiguration files
+/local.properties
+local.properties
+
+# Log files
+*.log
+
+# AS generated files
+.externalNativeBuild
+.cxx
+
+# IntelliJ
+*.iml
+/.idea
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+.DS_Store
+/captures
+
+# APP files
+secret.properties
+
+# Eclipse project files
+.classpath
+.project
