@@ -23,7 +23,7 @@ import com.artem.mi.hsh.ui.common.widgets.HtmlText
 import com.artem.mi.hsh.ui.theme.HSHTheme
 
 @Composable
-internal fun HospitalListItem(
+fun HospitalListItem(
     modifier: Modifier = Modifier,
     data: HospitalUi
 ) {

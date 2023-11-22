@@ -1,5 +1,23 @@
 package com.artem.mi.hsh.features.hospital
 
+import androidx.annotation.StringRes
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import com.artem.mi.hsh.R
+
 data class HospitalUi(
     val uniqueId: Int,
     val label: String,
@@ -11,6 +29,66 @@ data class HospitalUi(
     val availableDate: String
 )
 
-data class HospitalState(
-    val hospitals: List<HospitalUi> = emptyList()
+data class ViewStateActions(
+    val onErrorRetry: () -> Unit
 )
+
+sealed interface HospitalViewState {
+
+    @Composable
+    fun DrawState(vsActions: ViewStateActions)
+
+    fun dataLoaded(): Boolean = false
+
+    fun headerTitle(): Int = R.string.hospital_screen_header_name
+
+    class Data(private val hospitals: List<HospitalUi>) : HospitalViewState {
+        @Composable
+        override fun DrawState(vsActions: ViewStateActions) {
+            LazyColumn(
+                contentPadding = PaddingValues(vertical = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(
+                    items = hospitals,
+                    key = { it.uniqueId }
+                ) {
+                    HospitalListItem(
+                        modifier = Modifier
+                            .background(MaterialTheme.colorScheme.onPrimary),
+                        data = it
+                    )
+                }
+            }
+        }
+
+        override fun dataLoaded(): Boolean = true
+    }
+
+    object Loading : HospitalViewState {
+        @Composable
+        override fun DrawState(vsActions: ViewStateActions) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        }
+
+        override fun headerTitle(): Int = R.string.hospital_loading
+    }
+
+    data class Error(@StringRes private val idRes: Int) : HospitalViewState {
+        @Composable
+        override fun DrawState(vsActions: ViewStateActions) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = stringResource(id = idRes))
+            }
+        }
+
+    }
+}

@@ -5,6 +5,7 @@ import com.artem.mi.hsh.data.model.VoivodeshipType
 import java.net.URLEncoder
 
 data class RemoteSearchInput(
+    private val search: Boolean = true,
     private val pageNumber: String = "",
     private val type: VarietyType = VarietyType.EMPTY,
     private val children: Boolean = false,
@@ -12,6 +13,7 @@ data class RemoteSearchInput(
     private val voivodeship: VoivodeshipType = VoivodeshipType.Empty,
     private val locality: String = "",
 ) {
+    private val searchUrl = "?search=true"
     private val pageNumberUrl = "&page=$pageNumber"
     private val typeUrl = "&Case=${type.numeric}"
     private val childrenUrl = "&ForChildren=$children"
@@ -20,5 +22,5 @@ data class RemoteSearchInput(
     private val localityUrl = "&Locality=$locality"
 
     val searchParams =
-        pageNumberUrl + typeUrl + childrenUrl + serviceNameUrl + voivodeshipUrl + localityUrl
+        searchUrl + pageNumberUrl + typeUrl + childrenUrl + serviceNameUrl + voivodeshipUrl + localityUrl
 }
