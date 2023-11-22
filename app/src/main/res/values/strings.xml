@@ -1,3 +1,22 @@
 <resources>
     <string name="app_name">HSH</string>
+
+    <string name="hospital_screen_header_name">Hospital</string>
+    <string name="hospital_screen_header_voivodeship">Voivodeship</string>
+    <string name="hospital_screen_header_town">Town</string>
+    <string name="hospital_screen_header_referral_type">Select referral type</string>
+    <string name="hospital_screen_department">What department are you looking for?</string>
+    <string name="hospital_screen_last_update">Last update: </string>
+    <string name="hospital_screen_available_date">Available date: </string>
+    <string name="hospital_loading">Loading…</string>
+
+    <string name="something_went_wrong">Something went wrong. Retry.</string>
+    <string name="retry">Retry</string>
+    <string name="hospital_screen_select_search">Tap on the search icon to change filter options.</string>
+    <string name="lesser_poland">Lesser Poland</string>
+    <string name="opolskie">Opolskie</string>
+    <string name="lower_silesia">Lower Selesia</string>
+    <string name="search_screen_button_search">Search</string>
+    <string name="empty_lesser">- Optional -</string>
+    <string name="search_screen_header_title">Search</string>
 </resources>

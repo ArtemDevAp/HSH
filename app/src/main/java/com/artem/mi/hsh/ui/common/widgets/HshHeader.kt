@@ -45,7 +45,7 @@ fun HshHeader(
 }
 
 @Composable
-private fun HshHeaderIcon(
+fun HshHeaderIcon(
     modifier: Modifier = Modifier,
     @DrawableRes iconId: Int,
     onClick: () -> Unit
