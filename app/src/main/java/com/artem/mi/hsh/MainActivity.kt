@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.core.view.WindowCompat
+import com.artem.mi.hsh.features.hospital.HospitalRoute
 import com.artem.mi.hsh.ui.theme.HSHTheme
 
 class MainActivity : ComponentActivity() {
@@ -13,7 +14,7 @@ class MainActivity : ComponentActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
             HSHTheme {
-                // TODO navigation or screen
+                HospitalRoute()
             }
         }
     }

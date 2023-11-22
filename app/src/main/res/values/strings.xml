@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">HSH</string>
+    <string name="hospital_screen_header_name">Hospital</string>
+    <string name="hospital_screen_header_voivodeship">Voivodeship</string>
+    <string name="hospital_screen_header_town">Town</string>
+    <string name="hospital_screen_header_referral_type">Select referral type</string>
+    <string name="hospital_screen_department">What department are\n you looking for?</string>
+    <string name="hospital_screen_last_update">Last update: </string>
+    <string name="hospital_screen_available_date">Available date: </string>
 </resources>
