@@ -1,9 +1,9 @@
 package com.artem.mi.hsh.features.hospital
 
 import com.artem.mi.hsh.data.NfzSchedulerRepository
+import com.artem.mi.hsh.data.model.VoivodeshipType
 import com.artem.mi.hsh.data.remote.RemoteSearchInput
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.onStart
+import com.artem.mi.hsh.features.search.model.SearchOutputModel
 import java.util.concurrent.CancellationException
 
 class HospitalInteractor(
@@ -11,18 +11,20 @@ class HospitalInteractor(
     private val uiMapper: HospitalsUiMapper
 ) {
 
-    fun loadHospitals(input: RemoteSearchInput?) = flow {
-        val result = input?.let {
+    suspend fun loadHospitals(input: SearchOutputModel?): HospitalViewState {
+        return input?.let {
             try {
-                val result = nfzSchedulerRepositoryImpl.fetchAllAvailableDays(input)
+                val remoteInput = RemoteSearchInput(
+                    serviceName = input.serviceName,
+                    locality = input.locality,
+                    voivodeship = VoivodeshipType.LesserPoland
+                )
+                val result = nfzSchedulerRepositoryImpl.fetchAllAvailableDays(remoteInput)
                 uiMapper.map(result)
             } catch (e: Exception) {
                 if (e is CancellationException) throw e
                 uiMapper.mapError(e)
             }
         } ?: HospitalViewState.EmptySearchQuery
-        emit(result)
-    }.onStart {
-        emit(HospitalViewState.Loading)
     }
 }

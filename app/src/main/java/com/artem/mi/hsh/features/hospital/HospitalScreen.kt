@@ -24,7 +24,7 @@ import com.artem.mi.hsh.ui.theme.HSHTheme
 @Composable
 fun HospitalRoute() {
     val viewModel: HospitalViewModel = viewModel(factory = HospitalViewModel.Factory)
-    val contentState by viewModel.contentState.collectAsStateWithLifecycle()
+    val contentState by viewModel.uiState.collectAsStateWithLifecycle()
 
     val viewStateAction = ViewStateActions(
         onRetryPressed = viewModel::retry

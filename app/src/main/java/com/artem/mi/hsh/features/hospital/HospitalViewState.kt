@@ -120,6 +120,4 @@ sealed interface HospitalViewState {
 
         override fun showSearchIcon(): Boolean = true
     }
-
-    object Init : HospitalViewState
 }
