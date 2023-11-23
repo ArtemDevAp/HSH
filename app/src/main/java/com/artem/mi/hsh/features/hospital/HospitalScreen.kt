@@ -37,7 +37,6 @@ fun HospitalRoute() {
             // TODO open search
         }
     )
-
 }
 
 @Composable
@@ -54,7 +53,7 @@ private fun HospitalScreen(
     ) {
         Column {
             HshHeader(title = stringResource(id = contentState.headerTitle())) {
-                if (contentState.dataLoaded()) {
+                if (contentState.showSearchIcon()) {
                     Row(modifier = Modifier.align(Alignment.CenterEnd)) {
                         HshHeaderIcon(
                             iconId = R.drawable.ic_search_24,

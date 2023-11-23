@@ -11,14 +11,16 @@ class HospitalInteractor(
     private val uiMapper: HospitalsUiMapper
 ) {
 
-    fun loadHospitals(input: RemoteSearchInput) =  flow {
-        val result = try {
-            val result = nfzSchedulerRepositoryImpl.fetchAllAvailableDays(input)
-            uiMapper.map(result)
-        } catch (e: Exception) {
-            if (e is CancellationException) throw e
-            uiMapper.mapError(e)
-        }
+    fun loadHospitals(input: RemoteSearchInput?) = flow {
+        val result = input?.let {
+            try {
+                val result = nfzSchedulerRepositoryImpl.fetchAllAvailableDays(input)
+                uiMapper.map(result)
+            } catch (e: Exception) {
+                if (e is CancellationException) throw e
+                uiMapper.mapError(e)
+            }
+        } ?: HospitalViewState.EmptySearchQuery
         emit(result)
     }.onStart {
         emit(HospitalViewState.Loading)

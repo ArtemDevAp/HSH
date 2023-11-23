@@ -42,7 +42,7 @@ sealed interface HospitalViewState {
     @Composable
     fun DrawState(vsActions: ViewStateActions) = Unit
 
-    fun dataLoaded(): Boolean = false
+    fun showSearchIcon(): Boolean = false
 
     fun headerTitle(): Int = R.string.hospital_screen_header_name
 
@@ -66,7 +66,7 @@ sealed interface HospitalViewState {
             }
         }
 
-        override fun dataLoaded(): Boolean = true
+        override fun showSearchIcon(): Boolean = true
     }
 
     object Loading : HospitalViewState {
@@ -101,6 +101,24 @@ sealed interface HospitalViewState {
                 }
             }
         }
+    }
+
+    object EmptySearchQuery : HospitalViewState {
+        @Composable
+        override fun DrawState(vsActions: ViewStateActions) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(text = stringResource(id = R.string.hospital_screen_select_search))
+                }
+            }
+        }
+
+        override fun showSearchIcon(): Boolean = true
     }
 
     object Init : HospitalViewState

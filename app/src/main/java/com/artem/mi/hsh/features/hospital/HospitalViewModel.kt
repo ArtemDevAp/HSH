@@ -27,7 +27,7 @@ class HospitalViewModel(
     }.shareIn(viewModelScope, SharingStarted.Lazily)
 
     val contentState = retry.flatMapLatest {
-        hospitalInteractor.loadHospitals(searchInput)
+        hospitalInteractor.loadHospitals(null)
     }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5_000),
