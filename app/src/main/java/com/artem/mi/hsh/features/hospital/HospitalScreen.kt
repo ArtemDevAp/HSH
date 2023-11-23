@@ -1,29 +1,37 @@
 package com.artem.mi.hsh.features.hospital
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.artem.mi.hsh.R
 import com.artem.mi.hsh.ui.common.DevicesPreview
-import com.artem.mi.hsh.ui.common.widgets.HshHeader
 import com.artem.mi.hsh.ui.common.widgets.HshHeaderIcon
 import com.artem.mi.hsh.ui.theme.HSHTheme
 
 @Composable
-fun HospitalRoute() {
-    val viewModel: HospitalViewModel = viewModel(factory = HospitalViewModel.Factory)
+fun HospitalRoute(
+    viewModel: HospitalViewModel
+) {
     val contentState by viewModel.uiState.collectAsStateWithLifecycle()
 
     val viewStateAction = ViewStateActions(
@@ -39,31 +47,66 @@ fun HospitalRoute() {
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HospitalScreen(
     contentState: HospitalViewState,
     viewStateActions: ViewStateActions,
     onSearchIconClick: () -> Unit
 ) {
-    Surface(
-        modifier = Modifier
-            .fillMaxSize()
-            .windowInsetsPadding(WindowInsets.safeDrawing),
-        color = MaterialTheme.colorScheme.background
-    ) {
-        Column {
-            HshHeader(title = stringResource(id = contentState.headerTitle())) {
-                if (contentState.showSearchIcon()) {
-                    Row(modifier = Modifier.align(Alignment.CenterEnd)) {
+    Scaffold(
+        contentWindowInsets = WindowInsets.safeDrawing,
+        topBar = {
+            TopAppBar(
+                colors = topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.secondary,
+                    actionIconContentColor = MaterialTheme.colorScheme.background
+                ),
+                title = {
+                    SlideContent(content = contentState.headerTitle()) { idRes ->
+                        Text(text = stringResource(id = idRes))
+                    }
+                },
+                actions = {
+                    if (contentState.showSearchIcon()) {
                         HshHeaderIcon(
                             iconId = R.drawable.ic_search_24,
                             onClick = onSearchIconClick
                         )
                     }
                 }
-            }
+            )
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .padding(paddingValues),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
             contentState.DrawState(vsActions = viewStateActions)
         }
+    }
+}
+
+@Composable
+private fun <T> SlideContent(
+    content: T,
+    contentScope: @Composable (T) -> Unit
+) {
+    AnimatedContent(
+        targetState = content,
+        transitionSpec = {
+            slideInVertically(tween(350, easing = LinearOutSlowInEasing)) { fullSize ->
+                fullSize
+            } togetherWith slideOutVertically(
+                tween(
+                    350,
+                    easing = LinearOutSlowInEasing
+                )
+            ) { fullSize -> -fullSize }
+        }, label = ""
+    ) { targetContent ->
+        contentScope(targetContent)
     }
 }
 
