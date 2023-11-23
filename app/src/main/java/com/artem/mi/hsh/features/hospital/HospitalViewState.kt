@@ -4,10 +4,14 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -30,13 +34,13 @@ data class HospitalUi(
 )
 
 data class ViewStateActions(
-    val onErrorRetry: () -> Unit
+    val onRetryPressed: () -> Unit
 )
 
 sealed interface HospitalViewState {
 
     @Composable
-    fun DrawState(vsActions: ViewStateActions)
+    fun DrawState(vsActions: ViewStateActions) = Unit
 
     fun dataLoaded(): Boolean = false
 
@@ -86,9 +90,18 @@ sealed interface HospitalViewState {
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
-                Text(text = stringResource(id = idRes))
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(text = stringResource(id = idRes))
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Button(onClick = vsActions.onRetryPressed) {
+                        Text(text = stringResource(id = R.string.retry))
+                    }
+                }
             }
         }
-
     }
+
+    object Init : HospitalViewState
 }

@@ -9,4 +9,5 @@
     <string name="hospital_screen_available_date">Available date: </string>
     <string name="hospital_loading">Loading…</string>
     <string name="something_went_wrong">Something went wrong. Retry.</string>
+    <string name="retry">Retry</string>
 </resources>

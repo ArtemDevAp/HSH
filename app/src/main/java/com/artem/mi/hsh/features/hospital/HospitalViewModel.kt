@@ -4,58 +4,57 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import com.artem.mi.hsh.R
-import com.artem.mi.hsh.data.NfzSchedulerRepository
 import com.artem.mi.hsh.data.NfzSchedulerRepositoryImpl
 import com.artem.mi.hsh.data.model.VarietyType
 import com.artem.mi.hsh.data.model.VoivodeshipType
 import com.artem.mi.hsh.data.remote.RemoteSearchInput
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
-import java.util.concurrent.atomic.AtomicInteger
+import kotlinx.coroutines.launch
 
 class HospitalViewModel(
-    private val nfzSchedulerRepositoryImpl: NfzSchedulerRepository
+    private val searchInput: RemoteSearchInput,
+    private val hospitalInteractor: HospitalInteractor
 ) : ViewModel() {
 
-    private val atomicInt = AtomicInteger(0)
+    private val mutableRetry = MutableSharedFlow<Unit>()
+    private val retry = mutableRetry.onStart {
+        emit(Unit)
+    }.shareIn(viewModelScope, SharingStarted.Lazily)
 
-    val contentState = flow<HospitalViewState> {
-        val result = nfzSchedulerRepositoryImpl.fetchAllAvailableDays(
-            RemoteSearchInput(
-                type = VarietyType.Stable,
-                serviceName = "Poradnia dermatologiczna",
-                locality = "Kraków",
-                voivodeship = VoivodeshipType.LesserPoland
-            )
-        ).map {
-            HospitalUi(
-                uniqueId = atomicInt.incrementAndGet(),
-                label = it.hospitalName,
-                description = it.service,
-                profile = it.service,
-                address = it.address,
-                phoneNumber = it.number,
-                lastUpdateDate = it.lastUpdateDate,
-                availableDate = it.availableDate
-            )
-        }
-        emit(HospitalViewState.Data(result))
-    }.catch {
-        // TODO mapper for error
-        emit(HospitalViewState.Error(R.string.something_went_wrong))
+    val contentState = retry.flatMapLatest {
+        hospitalInteractor.loadHospitals(searchInput)
     }.stateIn(
-        scope = viewModelScope,
+        viewModelScope,
         SharingStarted.WhileSubscribed(5_000),
-        HospitalViewState.Loading
+        HospitalViewState.Init
     )
+
+    fun retry() {
+        viewModelScope.launch {
+            mutableRetry.emit(Unit)
+        }
+    }
 
     companion object {
         val Factory = viewModelFactory {
             initializer {
-                HospitalViewModel(NfzSchedulerRepositoryImpl())
+                HospitalViewModel(
+                    RemoteSearchInput(
+                        type = VarietyType.Stable,
+                        serviceName = "Poradnia dermatologiczna",
+                        locality = "Kraków",
+                        voivodeship = VoivodeshipType.LesserPoland
+                    ),
+                    HospitalInteractor(
+                        NfzSchedulerRepositoryImpl(),
+                        HospitalsUiMapperImpl()
+                    )
+                )
             }
         }
     }

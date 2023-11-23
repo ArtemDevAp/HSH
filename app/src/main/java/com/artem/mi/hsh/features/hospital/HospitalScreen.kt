@@ -26,9 +26,9 @@ fun HospitalRoute() {
     val viewModel: HospitalViewModel = viewModel(factory = HospitalViewModel.Factory)
     val contentState by viewModel.contentState.collectAsStateWithLifecycle()
 
-    val viewStateAction = ViewStateActions {
-        // TODO handle retry action
-    }
+    val viewStateAction = ViewStateActions(
+        onRetryPressed = viewModel::retry
+    )
 
     HospitalScreen(
         contentState = contentState,
@@ -37,6 +37,7 @@ fun HospitalRoute() {
             // TODO open search
         }
     )
+
 }
 
 @Composable
