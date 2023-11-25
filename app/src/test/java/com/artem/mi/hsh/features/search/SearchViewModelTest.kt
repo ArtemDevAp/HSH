@@ -4,6 +4,7 @@ import com.artem.mi.hsh.features.core.MainDispatcherRule
 import com.artem.mi.hsh.features.core.collectionStateTest
 import com.artem.mi.hsh.features.search.model.RadioTypeOption
 import com.artem.mi.hsh.features.search.model.Voivodeship
+import com.artem.mi.hsh.features.search.navigation.SearchNavigationDirection
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.*
@@ -141,7 +142,7 @@ class SearchViewModelTest {
             },
             assert = arrayOf({
                 val actual = viewModel.searchState.value
-                val expected = SearchNavigationDirection.NavigateToHospitalScreen
+                val expected = SearchNavigationDirection.NavigateToHospitalScreen("")
                 assertEquals(expected, actual.navigation)
             })
         )

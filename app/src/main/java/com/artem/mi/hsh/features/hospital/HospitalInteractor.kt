@@ -3,7 +3,7 @@ package com.artem.mi.hsh.features.hospital
 import com.artem.mi.hsh.data.NfzSchedulerRepository
 import com.artem.mi.hsh.data.model.VoivodeshipType
 import com.artem.mi.hsh.data.remote.RemoteSearchInput
-import com.artem.mi.hsh.features.search.model.SearchOutputModel
+import com.artem.mi.hsh.features.search.model.SearchOutputParameters
 import java.util.concurrent.CancellationException
 
 class HospitalInteractor(
@@ -11,7 +11,7 @@ class HospitalInteractor(
     private val uiMapper: HospitalsUiMapper
 ) {
 
-    suspend fun loadHospitals(input: SearchOutputModel?): HospitalViewState {
+    suspend fun loadHospitals(input: SearchOutputParameters?): HospitalViewState {
         return input?.let {
             try {
                 val remoteInput = RemoteSearchInput(

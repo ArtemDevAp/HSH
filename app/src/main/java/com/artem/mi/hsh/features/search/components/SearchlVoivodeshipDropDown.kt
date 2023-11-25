@@ -1,4 +1,4 @@
-package com.artem.mi.hsh.features.search
+package com.artem.mi.hsh.features.search.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.DropdownMenuItem

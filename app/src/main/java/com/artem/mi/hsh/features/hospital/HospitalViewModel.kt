@@ -2,11 +2,13 @@ package com.artem.mi.hsh.features.hospital
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.artem.mi.hsh.data.NfzSchedulerRepositoryImpl
-import com.artem.mi.hsh.features.search.model.SearchOutputModel
+import com.artem.mi.hsh.features.hospital.navigation.HOSPITAL_SEARCH_ARG
+import com.artem.mi.hsh.features.search.model.SearchOutputParameters
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -16,7 +18,7 @@ class HospitalViewModel(
     private val hospitalInteractor: HospitalInteractor
 ) : ViewModel() {
 
-    private val query = savedStateHandle.get<SearchOutputModel>(queryKey)
+    private val query = savedStateHandle.get<SearchOutputParameters>(HOSPITAL_SEARCH_ARG)
 
     private val mutableUiState = MutableStateFlow<HospitalViewState>(HospitalViewState.Loading)
     val uiState: StateFlow<HospitalViewState> get() = mutableUiState
@@ -38,26 +40,16 @@ class HospitalViewModel(
     }
 
     companion object {
-        val Factory = viewModelFactory {
+        val factory = viewModelFactory {
             initializer {
                 HospitalViewModel(
-                    SavedStateHandle(
-                        initialState = mapOf(
-                            queryKey to SearchOutputModel(
-                                serviceName = "Poradnia dermatologiczna",
-                                locality = "Kraków",
-                                voivodeship = "VoivodeshipType.LesserPoland"
-                            )
-                        )
-                    ),
-                    HospitalInteractor(
+                    savedStateHandle = createSavedStateHandle(),
+                    hospitalInteractor = HospitalInteractor(
                         NfzSchedulerRepositoryImpl(),
                         HospitalsUiMapperImpl()
                     )
                 )
             }
         }
-
-        private const val queryKey = "query"
     }
 }

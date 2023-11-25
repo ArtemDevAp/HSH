@@ -33,27 +33,28 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.artem.mi.hsh.R
+import com.artem.mi.hsh.features.search.components.HospitalDropDown
 
 import com.artem.mi.hsh.features.search.model.RadioTypeOption
 import com.artem.mi.hsh.features.search.model.Voivodeship
+import com.artem.mi.hsh.features.search.navigation.SearchNavigationDirection
 import com.artem.mi.hsh.ui.common.DevicesPreview
 import com.artem.mi.hsh.ui.theme.HSHTheme
 
 private data class SearchScreenAction(
-    val onOptionSelected: (RadioTypeOption) -> Unit = {},
-    val onServiceTextChanged: (String) -> Unit = {},
-    val onTownTextChanged: (String) -> Unit = {},
-    val onVoivodeshipPressed: () -> Unit = {},
-    val onVoivodeshipSelected: (Voivodeship) -> Unit = {},
-    val onSearchPressed: () -> Unit = {}
+    val onOptionSelected: (RadioTypeOption) -> Unit,
+    val onServiceTextChanged: (String) -> Unit,
+    val onTownTextChanged: (String) -> Unit,
+    val onVoivodeshipPressed: () -> Unit,
+    val onVoivodeshipSelected: (Voivodeship) -> Unit,
+    val onSearchPressed: () -> Unit
 )
 
 @Composable
 fun SearchRoute(
-    navigateToHospitalScreen: () -> Unit
+    viewModel: SearchViewModel = viewModel(),
+    onSearchSelected: (String) -> Unit
 ) {
-
-    val viewModel: SearchViewModel = viewModel()
     val searchState by viewModel.searchState.collectAsStateWithLifecycle()
 
     val actions = SearchScreenAction(
@@ -65,9 +66,14 @@ fun SearchRoute(
         onSearchPressed = viewModel::onSearchSelected
     )
 
+    val navigationActions = SearchNavigationDirection.Actions(
+        onSearchSelected = onSearchSelected,
+        resetNavigation = viewModel
+    )
+
     SearchNavigation(
         direction = searchState.navigation,
-        navigateToHospitalScreen
+        navigationActions = navigationActions
     )
 
     SearchScreen(
@@ -79,10 +85,10 @@ fun SearchRoute(
 @Composable
 private fun SearchNavigation(
     direction: SearchNavigationDirection,
-    navigateToHospitalScreen: () -> Unit
+    navigationActions: SearchNavigationDirection.Actions
 ) {
     LaunchedEffect(key1 = direction) {
-        direction.navigate(navigateToHospitalScreen)
+        direction.navigate(navigationActions)
     }
 }
 
@@ -141,7 +147,7 @@ private fun PreviewSearchScreen() {
     HSHTheme {
         SearchScreen(
             headerState = SearchViewState(),
-            SearchScreenAction()
+            SearchScreenAction({}, {}, {}, {}, {}, {})
         )
     }
 }

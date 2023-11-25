@@ -30,7 +30,8 @@ import com.artem.mi.hsh.ui.theme.HSHTheme
 
 @Composable
 fun HospitalRoute(
-    viewModel: HospitalViewModel
+    viewModel: HospitalViewModel,
+    onSearchIconClick: () -> Unit
 ) {
     val contentState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -41,9 +42,7 @@ fun HospitalRoute(
     HospitalScreen(
         contentState = contentState,
         viewStateActions = viewStateAction,
-        onSearchIconClick = {
-            // TODO open search
-        }
+        onSearchIconClick = onSearchIconClick
     )
 }
 
