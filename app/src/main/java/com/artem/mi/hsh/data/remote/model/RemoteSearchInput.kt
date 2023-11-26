@@ -1,24 +1,25 @@
-package com.artem.mi.hsh.data.remote
+package com.artem.mi.hsh.data.remote.model
 
-import com.artem.mi.hsh.data.model.VarietyType
-import com.artem.mi.hsh.data.model.VoivodeshipType
 import java.net.URLEncoder
+import java.util.Locale
 
 data class RemoteSearchInput(
     private val search: Boolean = true,
     private val pageNumber: String = "",
-    private val type: VarietyType = VarietyType.EMPTY,
+    private val type: String = "",
     private val children: Boolean = false,
     private val serviceName: String = "",
-    private val voivodeship: VoivodeshipType = VoivodeshipType.Empty,
+    private val voivodeship: String = "",
     private val locality: String = "",
 ) {
     private val searchUrl = "?search=true"
     private val pageNumberUrl = "&page=$pageNumber"
-    private val typeUrl = "&Case=${type.numeric}"
+    private val typeUrl = "&Case=$type"
     private val childrenUrl = "&ForChildren=$children"
-    private val serviceNameUrl = "ServiceName=${URLEncoder.encode(serviceName, "UTF-8")}"
-    private val voivodeshipUrl = "&State=${voivodeship.number}"
+    private val serviceNameUrl = "&ServiceName=${
+        URLEncoder.encode(serviceName, "UTF-8").uppercase(Locale.getDefault())
+    }"
+    private val voivodeshipUrl = "&State=$voivodeship"
     private val localityUrl = "&Locality=$locality"
 
     val searchParams =

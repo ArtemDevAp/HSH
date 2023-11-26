@@ -46,7 +46,6 @@ fun HospitalRoute(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HospitalScreen(
     contentState: HospitalViewState,
@@ -56,24 +55,10 @@ private fun HospitalScreen(
     Scaffold(
         contentWindowInsets = WindowInsets.safeDrawing,
         topBar = {
-            TopAppBar(
-                colors = topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.secondary,
-                    actionIconContentColor = MaterialTheme.colorScheme.background
-                ),
-                title = {
-                    SlideContent(content = contentState.headerTitle()) { idRes ->
-                        Text(text = stringResource(id = idRes))
-                    }
-                },
-                actions = {
-                    if (contentState.showSearchIcon()) {
-                        HshHeaderIcon(
-                            iconId = R.drawable.ic_search_24,
-                            onClick = onSearchIconClick
-                        )
-                    }
-                }
+            HospitalTopBar(
+                headerTitle = contentState.headerTitle(),
+                showSearchIcon = contentState.showSearchIcon(),
+                onSearchIconClick = onSearchIconClick
             )
         }
     ) { paddingValues ->
@@ -85,6 +70,34 @@ private fun HospitalScreen(
             contentState.DrawState(vsActions = viewStateActions)
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun HospitalTopBar(
+    headerTitle: Int,
+    showSearchIcon: Boolean,
+    onSearchIconClick: () -> Unit
+) {
+    TopAppBar(
+        colors = topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.secondary,
+            actionIconContentColor = MaterialTheme.colorScheme.background
+        ),
+        title = {
+            SlideContent(content = headerTitle) { idRes ->
+                Text(text = stringResource(id = idRes))
+            }
+        },
+        actions = {
+            if (showSearchIcon) {
+                HshHeaderIcon(
+                    iconId = R.drawable.ic_search_24,
+                    onClick = onSearchIconClick
+                )
+            }
+        }
+    )
 }
 
 @Composable

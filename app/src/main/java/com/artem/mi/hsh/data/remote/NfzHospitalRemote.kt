@@ -1,9 +1,12 @@
 package com.artem.mi.hsh.data.remote
 
 import com.artem.mi.hsh.data.model.NfzNetworkModel
+import com.artem.mi.hsh.data.remote.model.RemoteSearchInput
+import com.artem.mi.hsh.data.remote.model.RemoteTownDictionaryInput
 
 interface NfzHospitalRemote {
     suspend fun fetchHospitals(input: RemoteSearchInput): List<NfzNetworkModel>
+    suspend fun fetchTownDictionary(input: RemoteTownDictionaryInput): List<String>
 }
 
 class NfzHospitalRemoteImpl(
@@ -11,5 +14,9 @@ class NfzHospitalRemoteImpl(
 ) : NfzHospitalRemote {
     override suspend fun fetchHospitals(input: RemoteSearchInput): List<NfzNetworkModel> {
         return nfzClient.fetchNfzHospitals(input)
+    }
+
+    override suspend fun fetchTownDictionary(input: RemoteTownDictionaryInput): List<String> {
+        return nfzClient.fetchTownDictionary(input)
     }
 }

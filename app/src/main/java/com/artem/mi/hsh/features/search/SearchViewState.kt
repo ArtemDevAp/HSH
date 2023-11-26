@@ -6,6 +6,7 @@ import com.artem.mi.hsh.features.search.navigation.SearchNavigationDirection
 
 data class SearchViewState(
     val navigation: SearchNavigationDirection = SearchNavigationDirection.Empty,
+    val service: String = "",
 
     val referralOptions: List<RadioTypeOption> = emptyList(),
     val referralOptionSelected: RadioTypeOption = RadioTypeOption(""),
@@ -14,8 +15,9 @@ data class SearchViewState(
     val voivodeshipIsExpanded: Boolean = false,
     val voivodeshipSelected: Voivodeship = Voivodeship(),
 
-    val service: String = "",
-    val town: String = ""
+    val town: String = "",
+    val townIsExpanded: Boolean = false,
+    val townSuggestion: List<String> = emptyList()
 ) {
     fun changeVoivodeshipExpanded() = copy(voivodeshipIsExpanded = !voivodeshipIsExpanded)
 }

@@ -10,6 +10,7 @@ import kotlinx.serialization.json.Json
 @Serializable
 @Parcelize
 data class SearchOutputParameters(
+    val type: Int,
     val serviceName: String,
     val locality: String,
     val voivodeship: String

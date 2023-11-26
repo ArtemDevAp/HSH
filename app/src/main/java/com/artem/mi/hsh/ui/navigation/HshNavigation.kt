@@ -1,5 +1,9 @@
 package com.artem.mi.hsh.ui.navigation
 
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -13,8 +17,15 @@ import com.artem.mi.hsh.features.search.navigation.searchScreen
 fun HshNavigation(
     navController: NavHostController = rememberNavController()
 ) {
-    NavHost(navController = navController, startDestination = SEARCH_ROUTE) {
-        searchScreen { navController.navigateToHospital(it) }
-        hospitalScreen { navController.navigateUp() }
+    Surface {
+        NavHost(
+            navController = navController,
+            startDestination = SEARCH_ROUTE,
+            enterTransition = { fadeIn(animationSpec = tween(0)) },
+            exitTransition = { fadeOut(animationSpec = tween(0)) }
+        ) {
+            searchScreen { navController.navigateToHospital(it) }
+            hospitalScreen { navController.navigateUp() }
+        }
     }
 }

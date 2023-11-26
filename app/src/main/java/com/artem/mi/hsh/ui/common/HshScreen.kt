@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -26,7 +25,6 @@ fun HshScreen(
     horizontalAlignment: Alignment.Horizontal = Alignment.CenterHorizontally,
     windowInsetsPadding: WindowInsets = WindowInsets.safeDrawing,
     color: Color = MaterialTheme.colorScheme.background,
-    header: @Composable ColumnScope.() -> Unit,
     content: @Composable ColumnScope.() -> Unit
 ) {
     Surface(
@@ -35,12 +33,6 @@ fun HshScreen(
             .windowInsetsPadding(windowInsetsPadding),
         color = color
     ) {
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = horizontalAlignment,
-            verticalArrangement = verticalArrangement,
-            content = header
-        )
         Column(
             modifier = Modifier
                 .fillMaxSize()
