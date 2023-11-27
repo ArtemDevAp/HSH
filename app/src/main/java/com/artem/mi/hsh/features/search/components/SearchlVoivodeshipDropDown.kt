@@ -1,7 +1,6 @@
 package com.artem.mi.hsh.features.search.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -15,9 +14,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.TextRange
-import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.window.PopupProperties
+import com.artem.mi.hsh.R
 import com.artem.mi.hsh.features.search.model.Voivodeship
 import com.artem.mi.hsh.ui.common.DevicesPreview
 import com.artem.mi.hsh.ui.theme.HSHTheme
@@ -38,20 +38,21 @@ internal fun HospitalDropDown(
         onExpandedChange = { onExpandedChange() }
     ) {
         TextField(
-            modifier = Modifier.menuAnchor().fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .menuAnchor(),
             readOnly = true,
-            value = selectedItem.name,
+            value = selectedItem.titleAsString(),
             onValueChange = {},
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded) }
         )
         ExposedDropdownMenu(
-            modifier = Modifier.fillMaxWidth(),
             expanded = isExpanded,
             onDismissRequest = { onExpandedChange() }
         ) {
             items.forEach { item ->
                 DropdownMenuItem(
-                    text = { Text(text = item.name) },
+                    text = { Text(text = item.titleAsString()) },
                     onClick = { onItemSelected(item) })
             }
         }
@@ -60,7 +61,7 @@ internal fun HospitalDropDown(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun TownDropDown(
+internal fun StringDropDown(
     modifier: Modifier = Modifier,
     isExpanded: Boolean,
     items: List<String>,
@@ -68,29 +69,22 @@ internal fun TownDropDown(
     onValueChanged: (String) -> Unit,
     onItemSelected: (String) -> Unit
 ) {
+    val focusManager = LocalFocusManager.current
     ExposedDropdownMenuBox(
         modifier = modifier,
         expanded = isExpanded,
         onExpandedChange = { }
     ) {
         TextField(
-            modifier = Modifier.menuAnchor().fillMaxWidth(),
+            modifier = Modifier
+                .menuAnchor()
+                .fillMaxWidth(),
             singleLine = true,
-            value = TextFieldValue(
-                text = selectedItem,
-                selection = TextRange(selectedItem.length)
-            ),
-            onValueChange = {
-                onValueChanged.invoke(it.text)
-            },
-            keyboardOptions = KeyboardOptions(
-                autoCorrect = false
-            )
+            value = selectedItem,
+            onValueChange = onValueChanged
         )
         DropdownMenu(
-            modifier = Modifier
-                .fillMaxWidth(0.9f)
-                .exposedDropdownSize(),
+            modifier = Modifier.exposedDropdownSize(),
             expanded = isExpanded,
             onDismissRequest = {},
             properties = PopupProperties(
@@ -100,7 +94,10 @@ internal fun TownDropDown(
             items.forEach { item ->
                 DropdownMenuItem(
                     text = { Text(text = item) },
-                    onClick = { onItemSelected(item) })
+                    onClick = {
+                        focusManager.clearFocus()
+                        onItemSelected(item)
+                    })
             }
         }
     }
@@ -110,8 +107,8 @@ internal fun TownDropDown(
 @Composable
 private fun PreviewHospitalDropDown() {
     val list = listOf(
-        Voivodeship(code = "01", name = "Test1"),
-        Voivodeship(code = "00", name = "Test0")
+        Voivodeship(code = "01", titleResId = R.string.lesser_poland),
+        Voivodeship(code = "00", titleResId = R.string.opolskie)
     )
     var expanded by remember { mutableStateOf(false) }
     var selectedItem by remember { mutableStateOf(list[0]) }

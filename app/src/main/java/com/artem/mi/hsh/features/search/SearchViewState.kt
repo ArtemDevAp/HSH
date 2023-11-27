@@ -6,7 +6,10 @@ import com.artem.mi.hsh.features.search.navigation.SearchNavigationDirection
 
 data class SearchViewState(
     val navigation: SearchNavigationDirection = SearchNavigationDirection.Empty,
+
     val service: String = "",
+    val serviceIsExpanded: Boolean = false,
+    val serviceSuggestion: List<String> = emptyList(),
 
     val referralOptions: List<RadioTypeOption> = emptyList(),
     val referralOptionSelected: RadioTypeOption = RadioTypeOption(""),

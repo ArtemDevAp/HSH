@@ -3,8 +3,8 @@ package com.artem.mi.hsh.features.search
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,20 +20,20 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artem.mi.hsh.R
 import com.artem.mi.hsh.features.search.components.HospitalDropDown
-import com.artem.mi.hsh.features.search.components.TownDropDown
+import com.artem.mi.hsh.features.search.components.StringDropDown
 import com.artem.mi.hsh.features.search.model.RadioTypeOption
 import com.artem.mi.hsh.features.search.model.Voivodeship
 import com.artem.mi.hsh.features.search.navigation.SearchNavigationDirection
@@ -43,6 +43,7 @@ import com.artem.mi.hsh.ui.theme.HSHTheme
 private data class SearchScreenAction(
     val onOptionSelected: (RadioTypeOption) -> Unit,
     val onServiceTextChanged: (String) -> Unit,
+    val onServiceSelected: (String) -> Unit,
     val onTownTextChanged: (String) -> Unit,
     val onTownSelected: (String) -> Unit,
     val onVoivodeshipPressed: () -> Unit,
@@ -59,7 +60,9 @@ fun SearchRoute(
 
     val actions = SearchScreenAction(
         onOptionSelected = viewModel::onReferralOptionChanged,
+
         onServiceTextChanged = viewModel::onServiceTextChanged,
+        onServiceSelected = viewModel::onServiceSelected,
 
         onTownTextChanged = viewModel::onTownChanged,
         onTownSelected = viewModel::onTownSelected,
@@ -107,14 +110,18 @@ private fun SearchScreen(
             .windowInsetsPadding(WindowInsets.safeDrawing),
         color = MaterialTheme.colorScheme.background
     ) {
-        Column(modifier = Modifier.fillMaxSize().padding(horizontal = 8.dp)) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp)
+        ) {
             SearchContent(headerState = headerState, screenAction = screenAction)
             Spacer(modifier = Modifier.weight(1f))
             SearchButton(
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.CenterHorizontally)
-                    .padding(vertical = 16.dp, horizontal = 8.dp)
+                    .padding(vertical = 16.dp)
             ) { screenAction.onSearchPressed() }
         }
     }
@@ -128,7 +135,7 @@ private fun SearchButton(
     Button(
         modifier = modifier,
         onClick = onSearchPressed
-    ) { Text(text = "search") }
+    ) { Text(text = stringResource(id = R.string.search_screen_button_search)) }
 }
 
 @Composable
@@ -142,17 +149,24 @@ private fun SearchContent(
         onRadioSelected = screenAction.onOptionSelected
     )
     Spacer(modifier = Modifier.height(8.dp))
-    SearchTextField(
-        textBefore = stringResource(id = R.string.hospital_screen_department),
-        textField = headerState.service,
-        onValueChange = screenAction.onServiceTextChanged
-    )
-    Spacer(modifier = Modifier.height(8.dp))
-    HospitalVoivodeshipDropDown(
+    SearchScreenDropDown(
+        textBefore = stringResource(R.string.hospital_screen_department),
+    ) {
+        StringDropDown(
+            modifier = Modifier.fillMaxWidth(),
+            isExpanded = headerState.serviceIsExpanded,
+            items = headerState.serviceSuggestion,
+            selectedItem = headerState.service,
+            onItemSelected = screenAction.onServiceSelected,
+            onValueChanged = screenAction.onServiceTextChanged
+        )
+    }
+    Spacer(modifier = Modifier.height(16.dp))
+    SearchScreenDropDown(
         textBefore = stringResource(R.string.hospital_screen_header_town),
     ) {
-        TownDropDown(
-            modifier = Modifier.weight(1f),
+        StringDropDown(
+            modifier = Modifier.fillMaxWidth(),
             isExpanded = headerState.townIsExpanded,
             items = headerState.townSuggestion,
             selectedItem = headerState.town,
@@ -160,12 +174,12 @@ private fun SearchContent(
             onValueChanged = screenAction.onTownTextChanged
         )
     }
-    Spacer(modifier = Modifier.height(8.dp))
-    HospitalVoivodeshipDropDown(
+    Spacer(modifier = Modifier.height(16.dp))
+    SearchScreenDropDown(
         textBefore = stringResource(R.string.hospital_screen_header_voivodeship),
     ) {
         HospitalDropDown(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.fillMaxWidth(),
             isExpanded = headerState.voivodeshipIsExpanded,
             items = headerState.voivodeshipOptions,
             selectedItem = headerState.voivodeshipSelected,
@@ -173,7 +187,6 @@ private fun SearchContent(
             onItemSelected = screenAction.onVoivodeshipSelected
         )
     }
-    Spacer(modifier = Modifier.fillMaxWidth())
 }
 
 @DevicesPreview
@@ -182,46 +195,22 @@ private fun PreviewSearchScreen() {
     HSHTheme {
         SearchScreen(
             headerState = SearchViewState(),
-            SearchScreenAction({}, {}, {}, {}, {}, {}, {})
+            SearchScreenAction({}, {}, {}, {}, {}, {}, {}, {})
         )
     }
 }
 
 @Composable
-private fun HospitalVoivodeshipDropDown(
+private fun SearchScreenDropDown(
     textBefore: String,
-    dropDownView: @Composable RowScope.() -> Unit
+    dropDownView: @Composable ColumnScope.() -> Unit
 ) {
-    Row(
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
+    Column {
         Text(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.padding(bottom = 4.dp),
             text = textBefore
         )
         dropDownView()
-    }
-}
-
-@Composable
-private fun SearchTextField(
-    textBefore: String,
-    textField: String,
-    onValueChange: (String) -> Unit
-) {
-    Row(
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            modifier = Modifier.weight(1f),
-            text = textBefore
-        )
-        TextField(
-            modifier = Modifier.weight(1f),
-            value = textField, onValueChange = onValueChange
-        )
     }
 }
 

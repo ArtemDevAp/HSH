@@ -62,7 +62,7 @@ class SearchViewModelTest {
     fun `given voivodeship, when voivodeship selected, expect correct state`() = runTest {
         val mockVoivodeship = Voivodeship(
             code = "00",
-            name = "Test"
+            resId = "Test"
         )
         collectionStateTest(
             doOnStart = {

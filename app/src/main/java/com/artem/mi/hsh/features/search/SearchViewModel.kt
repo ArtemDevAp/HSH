@@ -1,12 +1,14 @@
+@file:OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
+
 package com.artem.mi.hsh.features.search
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.artem.mi.hsh.data.NfzFilterOptionsRepository
 import com.artem.mi.hsh.data.NfzFilterOptionsRepositoryImpl
+import com.artem.mi.hsh.domain.FetchSuggestionServiceUseCase
 import com.artem.mi.hsh.domain.FetchSuggestionTownUseCase
 import com.artem.mi.hsh.features.search.model.RadioTypeOption
 import com.artem.mi.hsh.features.search.model.SearchOutputParameters
@@ -14,14 +16,17 @@ import com.artem.mi.hsh.features.search.model.Voivodeship
 import com.artem.mi.hsh.features.search.model.mapFromRemote
 import com.artem.mi.hsh.features.search.navigation.SearchNavigationDirection
 import com.artem.mi.hsh.ui.common.navigation.ResetNavigation
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -31,7 +36,8 @@ import kotlinx.serialization.json.Json
 
 class SearchViewModel(
     nfzFilterOptionsRepository: NfzFilterOptionsRepository,
-    private val fetchSuggestionTownUseCase: FetchSuggestionTownUseCase
+    private val fetchSuggestionTownUseCase: FetchSuggestionTownUseCase,
+    private val fetchSuggestionServiceUseCase: FetchSuggestionServiceUseCase
 ) : ViewModel(), ResetNavigation {
 
     private val requestVoivodeshipData: Flow<List<Voivodeship>> =
@@ -48,7 +54,7 @@ class SearchViewModel(
                 .mapFromRemote()
         )
 
-    private val onTownChanged = MutableStateFlow("")
+    private val onTownChanged = MutableSharedFlow<Unit>()
     private val onTownChangedState = onTownChanged
         .debounce(SEARCH_DEBOUNCE)
         .mapLatest {
@@ -57,6 +63,13 @@ class SearchViewModel(
                 searchViewState.value.voivodeshipSelected.code
             )
             result
+        }
+
+    private val onServiceChanged = MutableSharedFlow<Unit>()
+    private val onServiceChangedState = onServiceChanged
+        .debounce(SEARCH_DEBOUNCE)
+        .mapLatest {
+            fetchSuggestionServiceUseCase.invoke(searchViewState.value.service)
         }
 
     private val searchViewState = MutableStateFlow(SearchViewState())
@@ -73,22 +86,34 @@ class SearchViewModel(
         SearchViewState()
     )
 
-
     init {
-        viewModelScope.launch {
-            onTownChangedState.collectLatest { townSuggestions ->
-                searchViewState.update {
-                    it.copy(
-                        townSuggestion = townSuggestions,
-                        townIsExpanded = townSuggestions.isNotEmpty()
-                    )
-                }
+        onTownChangedState.mapLatest { townSuggestions ->
+            searchViewState.update {
+                it.copy(
+                    townSuggestion = townSuggestions,
+                    townIsExpanded = townSuggestions.isNotEmpty()
+                )
             }
-        }
+        }.launchIn(viewModelScope)
+        onServiceChangedState.mapLatest { serviceSuggestions ->
+            searchViewState.update {
+                it.copy(
+                    serviceSuggestion = serviceSuggestions,
+                    serviceIsExpanded = serviceSuggestions.isNotEmpty()
+                )
+            }
+        }.launchIn(viewModelScope)
     }
 
     fun onServiceTextChanged(service: String) {
         searchViewState.update { it.copy(service = service) }
+        viewModelScope.launch { onServiceChanged.emit(Unit) }
+    }
+
+    fun onServiceSelected(text: String) {
+        searchViewState.update {
+            it.copy(service = text, serviceIsExpanded = false, serviceSuggestion = emptyList())
+        }
     }
 
     fun onVoivodeshipPressed() {
@@ -105,9 +130,8 @@ class SearchViewModel(
     }
 
     fun onTownChanged(town: String) {
-        Log.v("APP90", "town = $town")
         searchViewState.update { it.copy(town = town) }
-        viewModelScope.launch { onTownChanged.emit(town) }
+        viewModelScope.launch { onTownChanged.emit(Unit) }
     }
 
     fun onTownSelected(town: String) {
@@ -150,7 +174,8 @@ class SearchViewModel(
                 val nfzRepository = NfzFilterOptionsRepositoryImpl()
                 SearchViewModel(
                     nfzRepository,
-                    FetchSuggestionTownUseCase(nfzRepository)
+                    FetchSuggestionTownUseCase(nfzRepository),
+                    FetchSuggestionServiceUseCase(nfzRepository)
                 )
             }
         }
