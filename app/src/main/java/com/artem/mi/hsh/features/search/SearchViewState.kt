@@ -1,5 +1,6 @@
 package com.artem.mi.hsh.features.search
 
+import com.artem.mi.hsh.R
 import com.artem.mi.hsh.features.search.model.RadioTypeOption
 import com.artem.mi.hsh.features.search.model.Voivodeship
 import com.artem.mi.hsh.features.search.navigation.SearchNavigationDirection
@@ -16,7 +17,7 @@ data class SearchViewState(
 
     val voivodeshipOptions: List<Voivodeship> = emptyList(),
     val voivodeshipIsExpanded: Boolean = false,
-    val voivodeshipSelected: Voivodeship = Voivodeship(),
+    val voivodeshipSelected: Voivodeship = Voivodeship(titleResId = R.string.empty_lesser),
 
     val town: String = "",
     val townIsExpanded: Boolean = false,

@@ -17,4 +17,5 @@
     <string name="opolskie">Opolskie</string>
     <string name="lower_silesia">Lower Selesia</string>
     <string name="search_screen_button_search">Search</string>
+    <string name="empty_lesser">- Optional -</string>
 </resources>

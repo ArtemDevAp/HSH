@@ -20,8 +20,7 @@ class NfzFilterOptionsRepositoryImpl(
     override fun fetchVarietyTypes(): List<VarietyType> =
         VarietyType.list().filter { it.numeric.isNotEmpty() }
 
-    override fun voivodeshipTypes(): List<VoivodeshipType> =
-        VoivodeshipType.list().filter { it.number.isNotEmpty() }
+    override fun voivodeshipTypes(): List<VoivodeshipType> = VoivodeshipType.list()
 
     override suspend fun townDictionary(
         town: String,

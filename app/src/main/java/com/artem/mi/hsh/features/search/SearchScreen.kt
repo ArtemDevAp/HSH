@@ -26,7 +26,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -251,9 +250,7 @@ private fun HshRadioButton(
             .selectable(
                 selected = false,
                 interactionSource = remember { MutableInteractionSource() },
-                indication = rememberRipple(
-                    radius = 42.dp
-                )
+                indication = rememberRipple(radius = 42.dp)
             ) {
                 onRadioSelected.invoke(option)
             }

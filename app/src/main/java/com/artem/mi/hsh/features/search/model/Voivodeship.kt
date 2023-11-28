@@ -18,6 +18,7 @@ data class Voivodeship(
 fun List<VoivodeshipType>.mapFromRemote(): List<Voivodeship> {
     return map {
         val uiName = when (it) {
+            VoivodeshipType.Empty -> R.string.empty_lesser
             VoivodeshipType.LesserPoland -> R.string.lesser_poland
             VoivodeshipType.Opolskie -> R.string.opolskie
             VoivodeshipType.LowerSilesia -> R.string.lower_silesia

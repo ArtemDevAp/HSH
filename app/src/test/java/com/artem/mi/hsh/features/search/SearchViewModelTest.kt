@@ -1,13 +1,19 @@
 package com.artem.mi.hsh.features.search
 
-import com.artem.mi.hsh.features.core.MainDispatcherRule
-import com.artem.mi.hsh.features.core.collectionStateTest
+import com.artem.mi.hsh.core.MainDispatcherRule
+import com.artem.mi.hsh.core.collectionStateTest
+import com.artem.mi.hsh.core.mock.repository.NfzFilterOptionsRepositoryMock
+import com.artem.mi.hsh.core.mock.usecase.ServiceSuggestionsUseCaseMock
+import com.artem.mi.hsh.core.mock.usecase.TownSuggestionsUseCaseMock
 import com.artem.mi.hsh.features.search.model.RadioTypeOption
+import com.artem.mi.hsh.features.search.model.SearchOutputParameters
 import com.artem.mi.hsh.features.search.model.Voivodeship
 import com.artem.mi.hsh.features.search.navigation.SearchNavigationDirection
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.*
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.encodeToString
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -18,10 +24,17 @@ class SearchViewModelTest {
     val mainDispatcherRule = MainDispatcherRule()
 
     private lateinit var viewModel: SearchViewModel
+    private val nfzOptions = NfzFilterOptionsRepositoryMock()
+    private val townSuggestionsUseCaseMock = TownSuggestionsUseCaseMock()
+    private val serviceSuggestionsUseCaseMock = ServiceSuggestionsUseCaseMock()
 
     @Before
     fun setup() {
-        viewModel = SearchViewModel()
+        viewModel = SearchViewModel(
+            nfzFilterOptionsRepository = nfzOptions,
+            townSuggestionsUseCase = townSuggestionsUseCaseMock,
+            serviceSuggestionsUseCase = serviceSuggestionsUseCaseMock
+        )
     }
 
     @Test
@@ -62,7 +75,7 @@ class SearchViewModelTest {
     fun `given voivodeship, when voivodeship selected, expect correct state`() = runTest {
         val mockVoivodeship = Voivodeship(
             code = "00",
-            resId = "Test"
+            titleResId = null
         )
         collectionStateTest(
             doOnStart = {
@@ -142,7 +155,14 @@ class SearchViewModelTest {
             },
             assert = arrayOf({
                 val actual = viewModel.searchState.value
-                val expected = SearchNavigationDirection.NavigateToHospitalScreen("")
+                val params = SearchOutputParameters(
+                    type = -1,
+                    serviceName = "",
+                    locality = "",
+                    voivodeship = ""
+                )
+                val jsonParams = Json.encodeToString(params)
+                val expected = SearchNavigationDirection.NavigateToHospitalScreen(jsonParams)
                 assertEquals(expected, actual.navigation)
             })
         )
