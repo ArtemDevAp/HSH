@@ -3,7 +3,7 @@ package com.artem.mi.hsh.data
 import com.artem.mi.hsh.data.model.NfzNetworkModel
 import com.artem.mi.hsh.data.remote.NfzHospitalRemote
 import com.artem.mi.hsh.data.remote.NfzHospitalRemoteImpl
-import com.artem.mi.hsh.data.remote.RemoteSearchInput
+import com.artem.mi.hsh.data.remote.model.RemoteSearchInput
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
