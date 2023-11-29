@@ -24,7 +24,7 @@ fun List<VoivodeshipType>.mapFromRemote(): List<Voivodeship> {
             VoivodeshipType.LowerSilesia -> R.string.lower_silesia
         }
         Voivodeship(
-            code = it.number,
+            code = it.code,
             titleResId = uiName
         )
     }

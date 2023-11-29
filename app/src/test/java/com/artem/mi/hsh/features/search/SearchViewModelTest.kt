@@ -5,6 +5,8 @@ import com.artem.mi.hsh.core.collectionStateTest
 import com.artem.mi.hsh.core.mock.repository.NfzFilterOptionsRepositoryMock
 import com.artem.mi.hsh.core.mock.usecase.ServiceSuggestionsUseCaseMock
 import com.artem.mi.hsh.core.mock.usecase.TownSuggestionsUseCaseMock
+import com.artem.mi.hsh.data.model.VarietyType
+import com.artem.mi.hsh.data.model.VoivodeshipType
 import com.artem.mi.hsh.features.search.model.RadioTypeOption
 import com.artem.mi.hsh.features.search.model.SearchOutputParameters
 import com.artem.mi.hsh.features.search.model.Voivodeship
@@ -17,16 +19,25 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import com.artem.mi.hsh.R
+import com.artem.mi.hsh.domain.TownInputFilterModel
 
 class SearchViewModelTest {
 
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
+    private val varieties = listOf(VarietyType.Stable)
+    private val voivodeships = listOf(VoivodeshipType.LesserPoland)
     private lateinit var viewModel: SearchViewModel
-    private val nfzOptions = NfzFilterOptionsRepositoryMock()
-    private val townSuggestionsUseCaseMock = TownSuggestionsUseCaseMock()
-    private val serviceSuggestionsUseCaseMock = ServiceSuggestionsUseCaseMock()
+    private val nfzOptions = NfzFilterOptionsRepositoryMock(
+        varieties = varieties,
+        voivodeships = voivodeships
+    )
+
+    private val stringSuggestions = listOf("Test", "Test1")
+    private val townSuggestionsUseCaseMock = TownSuggestionsUseCaseMock(stringSuggestions)
+    private val serviceSuggestionsUseCaseMock = ServiceSuggestionsUseCaseMock(stringSuggestions)
 
     @Before
     fun setup() {
@@ -163,6 +174,99 @@ class SearchViewModelTest {
                 )
                 val jsonParams = Json.encodeToString(params)
                 val expected = SearchNavigationDirection.NavigateToHospitalScreen(jsonParams)
+                assertEquals(expected, actual.navigation)
+            })
+        )
+    }
+
+    @Test
+    fun `when load variety, expect correct state`() = runTest {
+        collectionStateTest(
+            doOnStart = {
+                viewModel.searchState.collect()
+            },
+            given = {},
+            assert = arrayOf({
+                val actual = viewModel.searchState.value
+                val expected = listOf(
+                    RadioTypeOption(
+                        title = VarietyType.Stable.name,
+                        type = VarietyType.Stable.numeric.toInt()
+                    )
+                )
+                assertEquals(expected, actual.referralOptions)
+            })
+        )
+    }
+
+    @Test
+    fun `when load voivodeships, expect correct state`() = runTest {
+        collectionStateTest(
+            doOnStart = {
+                viewModel.searchState.collect()
+            },
+            given = {},
+            assert = arrayOf({
+                val actual = viewModel.searchState.value
+                val expected = listOf(
+                    Voivodeship(
+                        code = VoivodeshipType.LesserPoland.code,
+                        titleResId = R.string.lesser_poland
+                    )
+                )
+                assertEquals(expected, actual.voivodeshipOptions)
+            })
+        )
+    }
+
+    @Test
+    fun `given town suggestion input filter, when town input changes, expect load suggestions`() =
+        runTest {
+            val param = TownInputFilterModel(town = "", voivodeship = "")
+            collectionStateTest(
+                doOnStart = {
+                    viewModel.searchState.collect()
+                },
+                given = {
+                    townSuggestionsUseCaseMock.emitNext(param)
+                },
+                assert = arrayOf({
+                    val actual = viewModel.searchState.value
+                    assertEquals(stringSuggestions, actual.townSuggestion)
+                })
+            )
+        }
+
+    @Test
+    fun `given service filter string, when town input changes, expect load suggestions`() =
+        runTest {
+            val param = "test"
+            collectionStateTest(
+                doOnStart = {
+                    viewModel.searchState.collect()
+                },
+                given = {
+                    serviceSuggestionsUseCaseMock.emitNext(param)
+                },
+                assert = arrayOf({
+                    val actual = viewModel.searchState.value
+                    assertEquals(stringSuggestions, actual.serviceSuggestion)
+                })
+            )
+        }
+
+    @Test
+    fun `when call reset navigation, expect correct state`() = runTest {
+        collectionStateTest(
+            doOnStart = {
+                viewModel.searchState.collect()
+            },
+            given = {
+                viewModel.resetNavigation()
+            },
+            assert = arrayOf({
+                val actual = viewModel.searchState.value
+                val expected = SearchNavigationDirection.Empty
                 assertEquals(expected, actual.navigation)
             })
         )
