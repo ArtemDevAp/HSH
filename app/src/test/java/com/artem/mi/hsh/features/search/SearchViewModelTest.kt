@@ -72,7 +72,7 @@ class SearchViewModelTest {
                 viewModel.searchState.collect()
             },
             given = {
-                viewModel.onVoivodeshipPressed()
+                viewModel.onChangeVoivodeshipExpanded()
             },
             assert = arrayOf({
                 val actual = viewModel.searchState.value

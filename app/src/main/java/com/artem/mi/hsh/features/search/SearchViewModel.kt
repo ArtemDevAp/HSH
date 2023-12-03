@@ -15,6 +15,7 @@ import com.artem.mi.hsh.domain.FetchTownSuggestionsUseCase
 import com.artem.mi.hsh.domain.FetchTownSuggestionsUseCaseImpl
 import com.artem.mi.hsh.domain.TownInputFilterModel
 import com.artem.mi.hsh.domain.core.ObservableFilterImpl
+import com.artem.mi.hsh.domain.core.StringFilter
 import com.artem.mi.hsh.features.search.model.RadioTypeOption
 import com.artem.mi.hsh.features.search.model.SearchOutputParameters
 import com.artem.mi.hsh.features.search.model.Voivodeship
@@ -78,7 +79,7 @@ class SearchViewModel(
         }
     }
 
-    fun onVoivodeshipPressed() {
+    fun onChangeVoivodeshipExpanded() {
         searchViewState.update { it.changeVoivodeshipExpanded() }
     }
 
@@ -112,10 +113,6 @@ class SearchViewModel(
         }
     }
 
-    override fun resetNavigation() {
-        searchViewState.update { it.copy(navigation = SearchNavigationDirection.Empty) }
-    }
-
     fun onSearchSelected() {
         val output = with(searchState.value) {
             SearchOutputParameters(
@@ -132,6 +129,10 @@ class SearchViewModel(
                 )
             )
         }
+    }
+
+    override fun resetNavigation() {
+        searchViewState.update { it.copy(navigation = SearchNavigationDirection.Empty) }
     }
 
     private fun observeSuggestions() {
@@ -163,15 +164,18 @@ class SearchViewModel(
                 val nfzRepository = NfzFilterOptionsRepositoryImpl()
                 val serviceObservableFilter = ObservableFilterImpl<String>()
                 val townObservableFilter = ObservableFilterImpl<TownInputFilterModel>()
+                val stringFilter = StringFilter()
                 SearchViewModel(
                     nfzRepository,
                     townSuggestionsUseCase = FetchTownSuggestionsUseCaseImpl(
                         nfzRepository,
-                        townObservableFilter
+                        townObservableFilter,
+                        stringFilter
                     ),
                     serviceSuggestionsUseCase = FetchServiceSuggestionsUseCaseImpl(
                         nfzRepository,
-                        serviceObservableFilter
+                        serviceObservableFilter,
+                        stringFilter
                     )
                 )
             }
