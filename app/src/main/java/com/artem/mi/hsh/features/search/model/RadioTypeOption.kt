@@ -3,7 +3,7 @@ package com.artem.mi.hsh.features.search.model
 import com.artem.mi.hsh.data.model.VarietyType
 
 data class RadioTypeOption(
-    val title: String,
+    val title: String = "",
     val type: Int = DEFAULT_TYPE
 ) {
     private companion object {
@@ -15,7 +15,7 @@ fun List<VarietyType>.mapFromRemote(): List<RadioTypeOption> {
     return map {
         RadioTypeOption(
             title = it.name,
-            type = it.numeric.toInt()
+            type = it.index.toInt()
         )
     }
 }

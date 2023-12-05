@@ -7,8 +7,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.artem.mi.hsh.data.NfzSchedulerRepositoryImpl
-import com.artem.mi.hsh.features.hospital.navigation.HOSPITAL_SEARCH_ARG
-import com.artem.mi.hsh.features.search.model.SearchOutputParameters
+import com.artem.mi.hsh.features.hospital.navigation.HospitalArgs
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -18,7 +17,7 @@ class HospitalViewModel(
     private val hospitalInteractor: HospitalInteractor
 ) : ViewModel() {
 
-    private val query = savedStateHandle.get<SearchOutputParameters>(HOSPITAL_SEARCH_ARG)
+    private val args = HospitalArgs(savedStateHandle)
 
     private val mutableUiState = MutableStateFlow<HospitalViewState>(HospitalViewState.Loading)
     val uiState: StateFlow<HospitalViewState> get() = mutableUiState
@@ -30,7 +29,7 @@ class HospitalViewModel(
     private fun refreshData() {
         viewModelScope.launch {
             mutableUiState.emit(HospitalViewState.Loading)
-            val loadedHospitals = hospitalInteractor.loadHospitals(query)
+            val loadedHospitals = hospitalInteractor.loadHospitals(args.hospitalSearch)
             mutableUiState.emit(loadedHospitals)
         }
     }

@@ -1,5 +1,6 @@
 package com.artem.mi.hsh.features.search.navigation
 
+import com.artem.mi.hsh.core.features.mockHospitalSearchParametersModel
 import com.artem.mi.hsh.ui.common.navigation.ResetNavigation
 import org.junit.Test
 import org.junit.Assert.assertEquals
@@ -9,7 +10,8 @@ class SearchNavigationDirectionTest {
 
     @Test
     fun `given navigation to hospital screen state, when call navigate, then expect correct reset`() {
-        val navigateToHospital = SearchNavigationDirection.NavigateToHospitalScreen("")
+        val params = mockHospitalSearchParametersModel
+        val navigateToHospital = SearchNavigationDirection.NavigateToHospitalScreen(params)
         val emptyClazz = SearchNavigationDirection.Empty::class
         val navigateClazz = navigateToHospital::class
 

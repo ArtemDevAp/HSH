@@ -8,18 +8,16 @@ import com.artem.mi.hsh.core.mock.usecase.TownSuggestionsUseCaseMock
 import com.artem.mi.hsh.data.model.VarietyType
 import com.artem.mi.hsh.data.model.VoivodeshipType
 import com.artem.mi.hsh.features.search.model.RadioTypeOption
-import com.artem.mi.hsh.features.search.model.SearchOutputParameters
 import com.artem.mi.hsh.features.search.model.Voivodeship
 import com.artem.mi.hsh.features.search.navigation.SearchNavigationDirection
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.test.runTest
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.encodeToString
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import com.artem.mi.hsh.R
+import com.artem.mi.hsh.core.features.mockHospitalSearchParametersModel
 import com.artem.mi.hsh.domain.TownInputFilterModel
 
 class SearchViewModelTest {
@@ -166,14 +164,8 @@ class SearchViewModelTest {
             },
             assert = arrayOf({
                 val actual = viewModel.searchState.value
-                val params = SearchOutputParameters(
-                    type = -1,
-                    serviceName = "",
-                    locality = "",
-                    voivodeship = ""
-                )
-                val jsonParams = Json.encodeToString(params)
-                val expected = SearchNavigationDirection.NavigateToHospitalScreen(jsonParams)
+                val params = mockHospitalSearchParametersModel
+                val expected = SearchNavigationDirection.NavigateToHospitalScreen(params)
                 assertEquals(expected, actual.navigation)
             })
         )
@@ -191,7 +183,7 @@ class SearchViewModelTest {
                 val expected = listOf(
                     RadioTypeOption(
                         title = VarietyType.Stable.name,
-                        type = VarietyType.Stable.numeric.toInt()
+                        type = VarietyType.Stable.index.toInt()
                     )
                 )
                 assertEquals(expected, actual.referralOptions)

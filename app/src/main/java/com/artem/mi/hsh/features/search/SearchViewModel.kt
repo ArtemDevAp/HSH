@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.artem.mi.hsh.core.features.HospitalSearchParametersModel
 import com.artem.mi.hsh.data.NfzFilterOptionsRepository
 import com.artem.mi.hsh.data.NfzFilterOptionsRepositoryImpl
 import com.artem.mi.hsh.domain.FetchServiceSuggestionsUseCase
@@ -17,7 +18,6 @@ import com.artem.mi.hsh.domain.TownInputFilterModel
 import com.artem.mi.hsh.domain.core.ObservableFilterImpl
 import com.artem.mi.hsh.domain.core.StringFilter
 import com.artem.mi.hsh.features.search.model.RadioTypeOption
-import com.artem.mi.hsh.features.search.model.SearchOutputParameters
 import com.artem.mi.hsh.features.search.model.Voivodeship
 import com.artem.mi.hsh.features.search.model.mapFromRemote
 import com.artem.mi.hsh.features.search.navigation.SearchNavigationDirection
@@ -35,8 +35,6 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 
 class SearchViewModel(
     nfzFilterOptionsRepository: NfzFilterOptionsRepository,
@@ -114,8 +112,8 @@ class SearchViewModel(
     }
 
     fun onSearchSelected() {
-        val output = with(searchState.value) {
-            SearchOutputParameters(
+        val navigationParams = with(searchState.value) {
+            HospitalSearchParametersModel(
                 type = referralOptionSelected.type,
                 serviceName = service,
                 locality = town,
@@ -124,9 +122,7 @@ class SearchViewModel(
         }
         searchViewState.update {
             it.copy(
-                navigation = SearchNavigationDirection.NavigateToHospitalScreen(
-                    Json.encodeToString(output)
-                )
+                navigation = SearchNavigationDirection.NavigateToHospitalScreen(navigationParams)
             )
         }
     }
@@ -162,19 +158,17 @@ class SearchViewModel(
         val factory = viewModelFactory {
             initializer {
                 val nfzRepository = NfzFilterOptionsRepositoryImpl()
-                val serviceObservableFilter = ObservableFilterImpl<String>()
-                val townObservableFilter = ObservableFilterImpl<TownInputFilterModel>()
                 val stringFilter = StringFilter()
                 SearchViewModel(
                     nfzRepository,
                     townSuggestionsUseCase = FetchTownSuggestionsUseCaseImpl(
                         nfzRepository,
-                        townObservableFilter,
+                        ObservableFilterImpl(),
                         stringFilter
                     ),
                     serviceSuggestionsUseCase = FetchServiceSuggestionsUseCaseImpl(
                         nfzRepository,
-                        serviceObservableFilter,
+                        ObservableFilterImpl(),
                         stringFilter
                     )
                 )

@@ -24,6 +24,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artem.mi.hsh.R
+import com.artem.mi.hsh.features.hospital.model.HospitalUiModel
 import com.artem.mi.hsh.ui.common.DevicesPreview
 import com.artem.mi.hsh.ui.common.widgets.HshHeaderIcon
 import com.artem.mi.hsh.ui.theme.HSHTheme
@@ -129,7 +130,7 @@ private fun PreviewHospitalScreen() {
         HospitalScreen(
             HospitalViewState.Data(
                 listOf(
-                    HospitalUi(
+                    HospitalUiModel(
                         uniqueId = 0,
                         label = "label",
                         description = "description",

@@ -21,17 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.artem.mi.hsh.R
-
-data class HospitalUi(
-    val uniqueId: Int,
-    val label: String,
-    val description: String,
-    val profile: String,
-    val address: String,
-    val phoneNumber: String,
-    val lastUpdateDate: String,
-    val availableDate: String
-)
+import com.artem.mi.hsh.features.hospital.model.HospitalUiModel
 
 data class ViewStateActions(
     val onRetryPressed: () -> Unit
@@ -46,7 +36,7 @@ sealed interface HospitalViewState {
 
     fun headerTitle(): Int = R.string.hospital_screen_header_name
 
-    class Data(private val hospitals: List<HospitalUi>) : HospitalViewState {
+    class Data(private val hospitals: List<HospitalUiModel>) : HospitalViewState {
         @Composable
         override fun DrawState(vsActions: ViewStateActions) {
             LazyColumn(
@@ -103,7 +93,7 @@ sealed interface HospitalViewState {
         }
     }
 
-    object EmptySearchQuery : HospitalViewState {
+    object Empty : HospitalViewState {
         @Composable
         override fun DrawState(vsActions: ViewStateActions) {
             Box(

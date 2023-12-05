@@ -18,6 +18,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.artem.mi.hsh.R
+import com.artem.mi.hsh.features.hospital.model.HospitalUiModel
 import com.artem.mi.hsh.ui.common.DevicesPreview
 import com.artem.mi.hsh.ui.common.widgets.HtmlText
 import com.artem.mi.hsh.ui.theme.HSHTheme
@@ -25,7 +26,7 @@ import com.artem.mi.hsh.ui.theme.HSHTheme
 @Composable
 fun HospitalListItem(
     modifier: Modifier = Modifier,
-    data: HospitalUi
+    data: HospitalUiModel
 ) {
     Column(modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(8.dp)) {
@@ -86,7 +87,7 @@ private fun IconTextRow(
 private fun PreviewHospitalListItem() {
     HSHTheme {
         HospitalListItem(
-            data = HospitalUi(
+            data = HospitalUiModel(
                 uniqueId = 0,
                 label = "label",
                 description = "description",

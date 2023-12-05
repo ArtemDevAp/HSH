@@ -24,7 +24,7 @@ fun HshNavigation(
             enterTransition = { fadeIn(animationSpec = tween(0)) },
             exitTransition = { fadeOut(animationSpec = tween(0)) }
         ) {
-            searchScreen { navController.navigateToHospital(it) }
+            searchScreen(onSearchSelected = navController::navigateToHospital)
             hospitalScreen { navController.navigateUp() }
         }
     }

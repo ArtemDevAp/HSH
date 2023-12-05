@@ -1,5 +1,6 @@
 package com.artem.mi.hsh.features.search.navigation
 
+import com.artem.mi.hsh.core.features.HospitalSearchParametersModel
 import com.artem.mi.hsh.ui.common.navigation.ResetNavigation
 
 sealed interface SearchNavigationDirection {
@@ -9,11 +10,11 @@ sealed interface SearchNavigationDirection {
     }
 
     data class NavigateToHospitalScreen(
-        private val string: String
+        private val searchParams: HospitalSearchParametersModel
     ) : SearchNavigationDirection {
         override fun navigate(navigationActions: Actions) {
             super.navigate(navigationActions)
-            navigationActions.onSearchSelected(string)
+            navigationActions.onSearchSelected(searchParams)
         }
     }
 
@@ -22,7 +23,7 @@ sealed interface SearchNavigationDirection {
     }
 
     data class Actions(
-        val onSearchSelected: (String) -> Unit,
+        val onSearchSelected: (searchParams: HospitalSearchParametersModel) -> Unit,
         val resetNavigation: ResetNavigation
     )
 }

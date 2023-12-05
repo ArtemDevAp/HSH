@@ -1,4 +1,4 @@
-package com.artem.mi.hsh.common
+package com.artem.mi.hsh.core.extensions
 
 import java.util.concurrent.CancellationException
 

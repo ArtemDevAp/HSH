@@ -1,6 +1,6 @@
 package com.artem.mi.hsh.data.model
 
-enum class VarietyType(val numeric: String) {
+enum class VarietyType(val index: String) {
     Stable("1"),
     Immediately("2");
 

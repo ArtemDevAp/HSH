@@ -12,7 +12,7 @@
 
     <string name="something_went_wrong">Something went wrong. Retry.</string>
     <string name="retry">Retry</string>
-    <string name="hospital_screen_select_search">Tap on search icon for input data.</string>
+    <string name="hospital_screen_select_search">Tap on the search icon to change filter options.</string>
     <string name="lesser_poland">Lesser Poland</string>
     <string name="opolskie">Opolskie</string>
     <string name="lower_silesia">Lower Selesia</string>
